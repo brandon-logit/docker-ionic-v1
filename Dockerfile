@@ -9,8 +9,10 @@ ENV ANDROID_HOME "/sdk"
 # Install apt packages
 RUN apt-get update && apt-get install --yes curl unzip wget
 RUN curl --silent --location https://deb.nodesource.com/setup_6.x | bash -
-RUN apt-get install -y git lib32stdc++6 lib32z1 nodejs build-essential openjdk-8-jdk-headless libio-socket-ssl-perl libnet-ssleay-perl bzip2 html2text libc6-i386 lib32gcc1 lib32ncurses5 && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get install -y git lib32stdc++6 lib32z1 nodejs build-essential openjdk-8-jdk libio-socket-ssl-perl libnet-ssleay-perl bzip2 html2text libc6-i386 lib32gcc1 lib32ncurses5 ruby ruby-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+ENV JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/jre"  
+ENV PATH "$PATH:${JAVA_HOME}/bin"
 
 # Install android SDK, tools and platforms
 RUN curl -s https://dl.google.com/android/repository/sdk-tools-linux-${VERSION_SDK_TOOLS}.zip > /sdk.zip && \
@@ -36,7 +38,7 @@ RUN while read -r package; do PACKAGES="${PACKAGES}${package} "; done < /sdk/pac
 
 # RUN mkdir "$ANDROID_HOME/licenses" && echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
 # Install npm packages
-RUN npm i -g cordova ionic gulp bower grunt phonegap && npm cache clean
+RUN npm i -g cordova ionic gulp bower grunt && npm cache clean
 
 # Create dummy app to build and preload gradle and maven dependencies
 RUN git config --global user.email "you@example.com" && git config --global user.name "Your Name"
@@ -45,6 +47,5 @@ ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin::/opt/grad
 ENV PATH "$PATH:${ANDROID_HOME}/tools"
 
 RUN gradle -v
-RUN cd / && echo 'n' | ionic start --no-interactive --no-link app blank --type ionic1 && cd /app && ionic --no-interactive cordova platform add android && cordova build android && rm -rf * .??*
 
 WORKDIR /app
