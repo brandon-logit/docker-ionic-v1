@@ -7,7 +7,7 @@ ENV ANDROID_HOME "/sdk"
 
 
 # Install apt packages
-RUN apt-get update && apt-get install --yes curl unzip wget
+RUN apt-get update --fix-missing && apt-get install --yes curl unzip wget
 RUN curl --silent --location https://deb.nodesource.com/setup_6.x | bash -
 RUN apt-get install -y git lib32stdc++6 lib32z1 nodejs build-essential openjdk-8-jdk libio-socket-ssl-perl libnet-ssleay-perl bzip2 html2text libc6-i386 lib32gcc1 lib32ncurses5 ruby ruby-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -47,5 +47,11 @@ ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin::/opt/grad
 ENV PATH "$PATH:${ANDROID_HOME}/tools"
 
 RUN gradle -v
+
+COPY Gemfile.lock .
+COPY Gemfile .
+
+RUN gem install bundle
+RUN bundle install
 
 WORKDIR /app
